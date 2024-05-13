@@ -1,5 +1,15 @@
 html 
-    head 
+    head
+        link(rel='stylesheet' type='text/css' href='./views/stylesheets/index.css')
         title= title
     body 
-        h1= header 
+        h1= header
+
+        ul(class= 'todolist')
+            each val in todoList
+                form(action= "/", method= "put")
+                    input(type= 'checkbox' value= val['todoId'] name = 'completedTask')
+                li= val['todoTask']
+                form(action= "/", method= "delete")
+                    input(type= 'button' value= 'X' name= val['todoId'])
+                br

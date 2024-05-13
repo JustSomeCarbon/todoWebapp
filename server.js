@@ -17,16 +17,33 @@ todo.addTodoItem("Eat breakfast");
 todo.addTodoItem("finish todo application");
 
 /*
+ * sends the information from the data store of the todo list to the frontend
+ */
 app.get("/", (request, response) => {
-    //response.set('Custom-type', 'application/json');
-    response.sendFile(path.join(__dirname, 'views/index.html'));
-    //response.send({"list": todo.itemList});
+    response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
 });
-*/
 
-app.get("/", (request, response) => {
-    response.render('index', {title: 'TodoList', header: "Todo List"});
-})
+/*
+ * updates the todo task sent back
+ */
+app.put("/", (request, response) => {
+    console.log("put method");
+    
+    // update some shit
+
+    response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
+});
+
+/*
+ * deletes the todo task sent back
+ */
+app.delete("/", (request, response) => {
+    console.log("delete");
+
+    // delete some shit
+
+    response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
+});
 
 
 app.listen(port, () => {
