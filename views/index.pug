@@ -8,8 +8,12 @@ html
         ul(class= 'todolist')
             each val in todoList
                 form(action= "/", method= "put")
-                    input(type= 'checkbox' value= val['todoId'] name = 'completedTask')
-                li= val['todoTask']
+                    input(type= 'checkbox' value= val['task_id'] name = 'completed_task')
+                li= val['task']
                 form(action= "/", method= "delete")
-                    input(type= 'button' value= 'X' name= val['todoId'])
+                    input(type= 'button' value= 'X' name= val['task_id'])
                 br
+        
+        form(action="/", method="post")
+            input(type="text" value="enter new task" name="new_task")
+            input(type="button" value="submit")

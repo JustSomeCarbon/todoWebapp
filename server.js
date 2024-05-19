@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const controller = require("./controller/controller");
+const db_controller = require("./controller/db_controller");
 
 const app = express();
 app.use(express.static(__dirname + '/'));
@@ -20,7 +21,10 @@ todo.addTodoItem("finish todo application");
  * sends the information from the data store of the todo list to the frontend
  */
 app.get("/", (request, response) => {
-    response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
+    //const data_array = db_controller.get_data();
+    db_controller.get_data().then(data => {
+        response.render('index', {title: 'TodoList', header: "Todo List", todoList: data});
+    });
 });
 
 /*
