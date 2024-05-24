@@ -19,7 +19,6 @@ async function get_data() {
 
         // convert to array and log the documents
         const tasks = await cursor.toArray();
-        console.log(`Inside get_data function:: ${tasks}`);
         await client.close();
         return tasks;
 
@@ -31,4 +30,40 @@ async function get_data() {
     }
 }
 
-module.exports = {get_data};
+
+/*
+ * 
+ */
+async function update_data(task_id) {
+    const collection = connect_db_collection('todoList', 'todoTasks');
+    const filter = {'task_id': task_id};
+    const update_document = {
+        $set: {
+            keyToUpdate: new_value
+        }
+    }
+
+    const result = await collection.updateOne(filter, update_document);
+
+    console.log(`${result.modifiedCount} document(s) updated`);
+
+    await client.close();
+}
+
+
+function connect_db_collection(database_name, collection_name)
+{
+    client.connect(async err => {
+        if (err) {
+            console.log(`Error connecting to mongoDB:: ${err}`);
+            return null;
+        }
+    });
+    const database = client.db(database_name);
+    const collection = database.collection(collection_name);
+
+    return collection;
+}
+
+
+module.exports = {get_data, update_data};

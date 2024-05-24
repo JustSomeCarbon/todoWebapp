@@ -1,3 +1,5 @@
+doctype html 
+
 html 
     head
         link(rel='stylesheet' type='text/css' href='./views/stylesheets/index.css')
@@ -7,13 +9,16 @@ html
 
         ul(class= 'todolist')
             each val in todoList
-                form(action= "/", method= "put")
-                    input(type= 'checkbox' value= val['task_id'] name = 'completed_task')
+                form(action= "/update", method= "POST")
+                    input(type="hidden" value=val['task_id'] name="existing_task_id")
+                    input(type= 'submit' value= val['completed'] name = 'task_status')
                 li= val['task']
-                form(action= "/", method= "delete")
-                    input(type= 'button' value= 'X' name= val['task_id'])
+                form(action= "/", method= "DELETE")
+                    input(type="hidden" value=val['task_id'] name="to_delete_id")
+                    input(type= 'submit' value= 'X' name= val['task_id'])
                 br
         
-        form(action="/", method="post")
-            input(type="text" value="enter new task" name="new_task")
+        form(action="/new_task", method="POST")
+            label(for="new_task") enter new task
+            input(type="text" name="new_task" id="new_task")
             input(type="button" value="submit")
