@@ -19,38 +19,46 @@ async function get_data() {
 
         // convert to array and log the documents
         const tasks = await cursor.toArray();
-        await client.close();
+
         return tasks;
 
     } catch(error) {
         console.error("Error loading documents from database:: ", error);
         return [{"None": "Nil"}];
-    } finally {
-        await client.close();
     }
 }
 
 
 /*
- * 
+ * update the data associated with the given task_id within the todo
+ * list database. return nothing.
  */
-async function update_data(task_id) {
+async function update_completed(task_id) {
     const collection = connect_db_collection('todoList', 'todoTasks');
     const filter = {'task_id': task_id};
+    collection.findOne(filter, (err, result) => {
+        if (err) {
+            console.log(`Error: ${err}`);
+            return;
+        }
+    });
+
+    new_value = !(result.completed);
+
     const update_document = {
         $set: {
-            keyToUpdate: new_value
+            completed: new_value
         }
     }
 
     const result = await collection.updateOne(filter, update_document);
 
     console.log(`${result.modifiedCount} document(s) updated`);
-
-    await client.close();
 }
 
-
+/*
+ * create a connection pool to the database
+ */
 function connect_db_collection(database_name, collection_name)
 {
     client.connect(async err => {
@@ -65,5 +73,12 @@ function connect_db_collection(database_name, collection_name)
     return collection;
 }
 
+/*
+ * close the connection established with the database
+ */
+async function close_db_connection() {
+    await client.close();
+}
 
-module.exports = {get_data, update_data};
+
+module.exports = {get_data, update_completed, connect_db_collection, close_db_connection};

@@ -13,12 +13,8 @@ const port = process.env.PORT || 8080;
 //app.use(express.json());
 //app.use(express.urlencoded({extended: true}));
 
-
-// initialize the todo list item
-todo = controller.initializeTodoList();
-todo.addTodoItem("brush teeth");
-todo.addTodoItem("Eat breakfast");
-todo.addTodoItem("finish todo application");
+// open the connection to the database
+db_controller.connect_db_collection("")
 
 function load_data(request, response) {
     //const data_array = db_controller.get_data();
@@ -40,7 +36,7 @@ app.post("/update", (request, response) => {
     
     console.log(request.body);
 
-    //db_controller.update_data(request.body.existing_task_id);
+    db_controller.update_completed(request.body.existing_task_id);
 
     //response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
     load_data(request, response);
