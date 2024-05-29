@@ -33,13 +33,15 @@ function initialize_application_db() {
  * @param {*} collection 
  * @returns a map of documents
  */
-async function get_data(collection) {
+async function get_data(todoCollection, finishedCollection) {
     try {
         // gather everything from the collection
-        const cursor = collection.find();
-        const tasks = await cursor.toArray();
+        const todoCursor = todoCollection.find();
+        const finishedCursor = finishedCollection.find();
+        const todoTasks = await todoCursor.toArray();
+        const finishedTasks = await finishedCursor.toArray();
 
-        return tasks;
+        return [todoTasks, finishedTasks];
 
     } catch(error) {
         console.error("Error loading documents from database:: ", error);

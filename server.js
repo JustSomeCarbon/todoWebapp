@@ -22,11 +22,13 @@ const [todoTasks, finishedTasks] = db_controller.initialize_application_db();
 function load_data(request, response) {
     //const data_array = db_controller.get_data();
     db_controller.get_data(todoTasks).then(data => {
-        response.render('index', {title: 'TodoList', header: "Todo List", todoList: data});
+        response.render('index', {title: 'TodoList', header: "Todo List", todoList: data[0], finishedList: data[1]});
     });
+    /*
     db_controller.get_data(finishedTasks).then(data => {
         response.render('index', {finishedList: data});
     });
+    */
     // reconstruct into a single call to get_data?
 }
 
