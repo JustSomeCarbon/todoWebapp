@@ -1,12 +1,10 @@
 const express = require("express");
-//const path = require("path");
-const bodyParser = require('body-parser')
-const controller = require("./controller/controller");
+const bodyParser = require('body-parser');
 const db_controller = require("./controller/db_controller");
 
 const app = express();
 app.use(express.static(__dirname + '/'));
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set('view engine', 'pug');
 const port = process.env.PORT || 8080;
@@ -14,14 +12,24 @@ const port = process.env.PORT || 8080;
 //app.use(express.urlencoded({extended: true}));
 
 // open the connection to the database
-db_controller.connect_db_collection("")
+const [todoTasks, finishedTasks] = db_controller.initialize_application_db();
 
+/**
+ * Loads the data from the databases to the index page
+ * @param {*} request 
+ * @param {*} response 
+ */
 function load_data(request, response) {
     //const data_array = db_controller.get_data();
-    db_controller.get_data().then(data => {
+    db_controller.get_data(todoTasks).then(data => {
         response.render('index', {title: 'TodoList', header: "Todo List", todoList: data});
     });
+    db_controller.get_data(finishedTasks).then(data => {
+        response.render('index', {finishedList: data});
+    });
+    // reconstruct into a single call to get_data?
 }
+
 
 /*
  * sends the information from the data store of the todo list to the frontend
@@ -41,6 +49,7 @@ app.post("/update", (request, response) => {
     //response.render('index', {title: 'TodoList', header: "Todo List", todoList: todo.itemList});
     load_data(request, response);
 });
+
 
 /*
  * updates the todo task sent back

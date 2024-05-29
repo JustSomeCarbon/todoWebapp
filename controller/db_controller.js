@@ -9,15 +9,34 @@ const { MongoClient } = require('mongodb');
 const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.5"
 const client = new MongoClient(uri);
 
-async function get_data() {
+/**
+ * initialize the database pool and retrieve necessary collection connections
+ * @returns todoTasks and finishedTasks collections
+ */
+function initialize_application_db() {
+    if (!connect_db_engine()) { // MAY CAUSE A RACE CONDITION ???
+        throw new Error("No databse connection");
+    }
+
+    // connect to database
+    const db = connect_db('todoList');
+
+    // connect to database collections
+    const todoTasks = connect_collection(db, 'todoTasks');
+    const finishedTasks = connect_collection(db, 'completedTasks');
+
+    return [todoTasks, finishedTasks];
+}
+
+/**
+ * takes a collection and queries all documents to return them
+ * @param {*} collection 
+ * @returns a map of documents
+ */
+async function get_data(collection) {
     try {
-        client.connect();
-        const database = client.db('todoList');
-        const collection = database.collection('todoTasks');
-
+        // gather everything from the collection
         const cursor = collection.find();
-
-        // convert to array and log the documents
         const tasks = await cursor.toArray();
 
         return tasks;
@@ -29,51 +48,91 @@ async function get_data() {
 }
 
 
-/*
+/**
  * update the data associated with the given task_id within the todo
- * list database. return nothing.
+ * list database.
+ * @param {*} task_id 
  */
-async function update_completed(task_id) {
-    const collection = connect_db_collection('todoList', 'todoTasks');
-    const filter = {'task_id': task_id};
-    collection.findOne(filter, (err, result) => {
+async function update_task_complete(task_id, todoTasks, finishedTasks) {
+    const filter = {'_id': task_id};
+    const doc = todoTasks.findOne(filter, (err) => {
         if (err) {
             console.log(`Error: ${err}`);
-            return;
+            return false;
         }
     });
 
-    new_value = !(result.completed);
+    // insert the task to finished Tasks
+    finishedTasks.insertOne(doc);
+    todoTasks.deleteOne(filter);
 
-    const update_document = {
-        $set: {
-            completed: new_value
-        }
-    }
-
-    const result = await collection.updateOne(filter, update_document);
-
-    console.log(`${result.modifiedCount} document(s) updated`);
+    console.log('document moved from incomplete to complete');
+    return true;
 }
 
-/*
- * create a connection pool to the database
+/**
+ * updates a task and moves it from completed to incomplete
+ * @param {*} task_id 
+ * @param {*} todoTasks 
+ * @param {*} finishedTasks 
  */
-function connect_db_collection(database_name, collection_name)
-{
-    client.connect(async err => {
+async function update_task_incomplete(task_id, todoTasks, finishedTasks) {
+    const filter = {'_id': task_id}
+    const doc = finishedTasks.findOne(filter, (err) => {
         if (err) {
-            console.log(`Error connecting to mongoDB:: ${err}`);
-            return null;
+            console.log(`Error: ${err}`);
+            return false;
         }
     });
-    const database = client.db(database_name);
-    const collection = database.collection(collection_name);
 
+    todoTasks.insertOne(doc);
+    finishedTasks.deleteOne(filter);
+
+    console.log('moved task from completed to incomplete');
+    return true;
+}
+
+
+/**
+ * create a connection pool to the specified mongo database engine
+ * @returns true if the connection was established, false otherwise
+ */
+async function connect_db_engine()
+{
+    await client.connect(async err => {
+        if (err) {
+            console.log(`Error connecting to mongoDB: ${err}`)
+            return false;
+        }
+    });
+    return true;
+}
+
+
+/**
+ * connects to a database
+ * @param {*} database_name 
+ * @returns a connection to the given database
+ */
+function connect_db(database_name) {
+    const database = client.db(database_name);
+    return database;
+}
+
+
+/**
+ * create a connection to the specified database collection
+ * @param {*} database 
+ * @param {*} collection_name 
+ * @returns a connection to the given collection
+ */
+function connect_collection(database, collection_name)
+{
+    const collection = database.collection(collection_name);
     return collection;
 }
 
-/*
+/**
  * close the connection established with the database
  */
 async function close_db_connection() {
@@ -81,4 +140,12 @@ async function close_db_connection() {
 }
 
 
-module.exports = {get_data, update_completed, connect_db_collection, close_db_connection};
+module.exports = {
+    initialize_application_db,
+    get_data,
+    update_task_complete,
+    update_task_incomplete,
+    connect_db,
+    connect_collection,
+    close_db_connection
+};
