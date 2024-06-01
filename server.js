@@ -39,12 +39,12 @@ app.get("/", load_data);
 app.post("/complete", (request, response) => {
     if ("existing_task_id" in request.body) {
         console.log(request.body);
-        db_controller.update_task_complete(request.body.existing_task_id, db, 'todoTasks').then(val => {
+        db_controller.update_task_complete(request.body.existing_task_id, db, 'todoTasks').then(res => {
             load_data(request, response);
         });
     } else if ("finished_task_id" in request.body) {
         console.log(request.body);
-        db_controller.update_task_incomplete(request.body.finished_task_id, db, 'completedTasks').then(val => {
+        db_controller.update_task_incomplete(request.body.finished_task_id, db, 'completedTasks').then(res => {
             load_data(request, response);
         });
     } else {
@@ -57,13 +57,14 @@ app.post("/complete", (request, response) => {
 /*
  * updates the todo task sent back
  */
-app.post("/new_task", (request, response) => {
+app.post("/newtask", (request, response) => {
     console.log("post new");
 
     // update some shit
     console.log(request.body);
-
-    load_data(request, response);
+    db_controller.add_new_task(request.body.new_task, db).then(res => {
+        load_data(request, response);
+    });
 });
 
 

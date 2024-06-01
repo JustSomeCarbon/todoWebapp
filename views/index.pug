@@ -11,23 +11,22 @@ html
             each val in todoList
                 form(action= "/complete", method= "POST")
                     input(type="hidden" value=val['_id'] name="existing_task_id")
-                    input(type= 'submit' value= "check")
+                    input(type= 'submit' value="check" name= val[_id])
                 li= val['task']
                 form(action= "/deletetodo", method= "DELETE")
                     input(type="hidden" value=val['_id'] name="to_delete_id")
                     input(type= 'submit' value= 'X' name= val['_id'])
                 br
         
-        form(action="/new_task", method="POST")
-            label(for="new_task")
+        form(action= "/newtask", method= "POST")
             input(type="text" name="new_task" placeholder="Enter a new task" id="new_task")
-            input(type="button" value="submit")
+            input(type="submit" value="submit")
 
         ul(class='finishedlist')
             each val in finishedList
                 form(action= "/complete", method="POST")
-                    input(type="hidden" value=val[_id] name="finished_task_id")
-                    input(type="submit" value="uncheck")
+                    input(type="hidden" value=val['_id'] name="finished_task_id")
+                    input(type="submit" value="uncheck" name = val[_id])
                 li= val["task"]
                 form(action= "/deletecompleted", method= "DELETE")
                     input(type="hidden" value=val['_id'] name="to_delete_id")

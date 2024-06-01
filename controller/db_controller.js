@@ -4,7 +4,7 @@
  * information.
  */
 
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 //const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.5"
 const uri = "mongodb://127.0.0.1:27017/?directConnection=true&&appName=mongosh+2.2.5"
@@ -59,7 +59,9 @@ async function get_data(db) {
  * @param {*} coll 
  */
 async function update_task_complete(task_id, db, coll) {
-    const filter = {'_id': task_id};
+    console.log(`type of task_id: ${typeof task_id}`);
+    const id = new ObjectId(task_id.toString());
+    const filter = {'_id': id};
     await db.collection(coll).findOne(filter).then((result) => {
         console.log(`Document:: ${result}`);
         insert_document(result, db, 'completedTasks', coll, filter);
@@ -69,7 +71,6 @@ async function update_task_complete(task_id, db, coll) {
         return false;
     });
 
-    console.log('document moved from incomplete to complete');
     return true;
 }
 
@@ -79,8 +80,8 @@ async function update_task_complete(task_id, db, coll) {
  * @param {*} db 
  */
 async function update_task_incomplete(task_id, db, coll) {
-    console.log(task_id);
-    const filter = {'_id': task_id}
+    const id = new ObjectId(task_id.toString());
+    const filter = {'_id': id};
     await db.collection(coll).findOne(filter).then(result => {
         console.log(`Document:: ${result}`);
         insert_document(result, db, 'todoTasks', coll, filter);
@@ -90,7 +91,6 @@ async function update_task_incomplete(task_id, db, coll) {
         return false;
     });
 
-    console.log('moved task from completed to incomplete');
     return true;
 }
 
