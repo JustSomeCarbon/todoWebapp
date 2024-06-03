@@ -11,7 +11,7 @@ The todo app will have the following:
 - [X] load todo items from database
 - [X] list all todo items
 - [X] add a new todo item
-- [X] move coimpleted todo items to incomplete
+- [X] move completed todo items to incomplete
 - [X] delete current todo items
 - [X] delete completed todo items
 - [X] store todo items in database
