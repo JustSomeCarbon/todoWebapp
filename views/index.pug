@@ -13,13 +13,13 @@ html
                     input(type="hidden" value=val['_id'] name="existing_task_id")
                     input(type= 'submit' value="check" name= val[_id])
                 li= val['task']
-                form(action= "/deletetodo", method= "DELETE")
+                form(action= "/remtodo", method= "POST")
                     input(type="hidden" value=val['_id'] name="to_delete_id")
                     input(type= 'submit' value= 'X' name= val['_id'])
                 br
         
-        form(action= "/newtask", method= "POST")
-            input(type="text" name="new_task" placeholder="Enter a new task" id="new_task")
+        form(action= "/task", method= "POST")
+            input(type="text" name="new_task" placeholder="Enter a new task")
             input(type="submit" value="submit")
 
         ul(class='finishedlist')
@@ -28,7 +28,7 @@ html
                     input(type="hidden" value=val['_id'] name="finished_task_id")
                     input(type="submit" value="uncheck" name = val[_id])
                 li= val["task"]
-                form(action= "/deletecompleted", method= "DELETE")
+                form(action= "/remcompleted", method= "POST")
                     input(type="hidden" value=val['_id'] name="to_delete_id")
                     input(type= 'submit' value= 'X' name= val['_id'])
                 br

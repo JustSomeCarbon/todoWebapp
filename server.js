@@ -57,11 +57,9 @@ app.post("/complete", (request, response) => {
 /*
  * updates the todo task sent back
  */
-app.post("/newtask", (request, response) => {
+app.post("/task", (request, response) => {
     console.log("post new");
 
-    // update some shit
-    console.log(request.body);
     db_controller.add_new_task(request.body.new_task, db).then(res => {
         load_data(request, response);
     });
@@ -71,7 +69,7 @@ app.post("/newtask", (request, response) => {
 /*
  * deletes a task from the todo collection
  */
-app.delete("/deletetodo", (request, response) => {
+app.post("/remtodo", (request, response) => {
     console.log("delete Todo");
 
     db_controller.delete_task(request.body.to_delete_id, db, "todoTasks").then(res => {
@@ -83,7 +81,7 @@ app.delete("/deletetodo", (request, response) => {
 /**
  * deletes a task from the completed collection
  */
-app.delete("/deletecompleted", (request, response) => {
+app.post("/remcompleted", (request, response) => {
     console.log("delete Completed");
 
     db_controller.delete_task(request.body.to_delete_id, db, "completedTasks").then(res => {

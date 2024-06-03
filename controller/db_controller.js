@@ -118,7 +118,8 @@ async function add_new_task(task, db) {
 
 
 async function delete_task(task_id, db, coll) {
-    const filter = {"_id": task_id};
+    const id = new ObjectId(task_id.toString());
+    const filter = {"_id": id};
 
     const result = await db.collection(coll).deleteOne(filter);
     console.log(`Deleted task: ${result}`);
